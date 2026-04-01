@@ -1,0 +1,15 @@
+services:
+  pulpit:
+    image: ghcr.io/stockyard-dev/stockyard-pulpit:latest
+    ports:
+      - "8860:8860"
+    environment:
+      - PORT=${STOCKYARD_PORT:-8860}
+      - DATA_DIR=${STOCKYARD_DATA_DIR:-/data}
+      - PULPIT_LICENSE_KEY=${STOCKYARD_PULPIT_LICENSE_KEY:-}
+    volumes:
+      - pulpit-data:/data
+    restart: unless-stopped
+volumes:
+  pulpit-data:
+    driver: local
