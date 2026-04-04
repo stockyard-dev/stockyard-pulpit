@@ -24,7 +24,7 @@ func(s *Server)list(w http.ResponseWriter,r *http.Request){
     if q!=""||len(filters)>0{wj(w,200,map[string]any{"broadcasts":oe(s.db.Search(q,filters))});return}
     wj(w,200,map[string]any{"broadcasts":oe(s.db.List())})
 }
-func(s *Server)create(w http.ResponseWriter,r *http.Request){if s.limits.MaxItems>0{items:=s.db.List();if len(items)>=s.limits.MaxItems{we(w,402,"Free tier limit reached. Upgrade at https://stockyard.dev/pulpit/");return}};var e store.Broadcast;json.NewDecoder(r.Body).Decode(&e);if e.Title==""{we(w,400,"title required");return};s.db.Create(&e);wj(w,201,s.db.Get(e.ID))}
+func(s *Server)create(w http.ResponseWriter,r *http.Request){if s.limits.MaxItems>0{if s.db.Count()>=s.limits.MaxItems{we(w,402,"Free tier limit reached. Upgrade at https://stockyard.dev/pulpit/");return}};var e store.Broadcast;json.NewDecoder(r.Body).Decode(&e);if e.Title==""{we(w,400,"title required");return};s.db.Create(&e);wj(w,201,s.db.Get(e.ID))}
 func(s *Server)get(w http.ResponseWriter,r *http.Request){e:=s.db.Get(r.PathValue("id"));if e==nil{we(w,404,"not found");return};wj(w,200,e)}
 func(s *Server)update(w http.ResponseWriter,r *http.Request){
     existing:=s.db.Get(r.PathValue("id"));if existing==nil{we(w,404,"not found");return}
